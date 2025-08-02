@@ -325,3 +325,15 @@ class DatabaseService:
             VALUES (?, ?, ?, ?, ?)
         ''', (user_id, isbn, rating, comment, datetime.datetime.now().isoformat()))
         self.conn.commit()
+
+    # Könyvhöz tartozó vélemények lekérdezése
+    def get_reviews_for_book(self, isbn):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT r.rating, r.comment, u.username, r.created_at
+            FROM reviews r
+            JOIN users u ON r.user_id = u.id
+            WHERE r.book_isbn=?
+            ORDER BY r.created_at DESC
+        ''', (isbn,))
+        return cursor.fetchall()
