@@ -1,3 +1,4 @@
+import os
 
 from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QFileDialog
 
@@ -37,3 +38,13 @@ class AddBookDialog(QDialog):
         if fname:
             self.pdf_path = fname
             self.pdf_btn.setText(f"PDF csatolva: {os.path.basename(fname)}")
+
+    # Beírt könyv adatok visszaadása
+    def get_data(self):
+        return (
+            self.title_input.text(),
+            self.authors_input.text(),
+            self.isbn_input.text(),
+            self.year_input.text(),
+            self.pdf_path
+        )
