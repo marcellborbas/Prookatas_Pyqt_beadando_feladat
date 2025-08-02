@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QFormLayout, QLineEdit, QPushButton, QMessageBox
+    QWidget, QFormLayout, QLineEdit, QPushButton, QMessageBox, QLabel
 )
 from services.database_service import DatabaseService
 from utils.validators import is_valid_username, is_valid_email, is_valid_birthdate, is_valid_phone
@@ -64,3 +64,29 @@ class UserModule(QWidget):
             self.close()
         except Exception as e:
             QMessageBox.critical(self, "Hiba", f"Hiba történt: {str(e)}")
+
+# Felhasználói profil megjelenítő modu
+class UserProfile(QWidget):
+    def __init__(self, user_id, parent=None):
+        super().__init__(parent)
+        self.db = DatabaseService()
+        self.user_id = user_id
+        self.setWindowTitle("Felhasználói profil")
+        self.init_ui()
+
+    # Felhasználói adatok megjelenítése
+    def init_ui(self):
+        user = self.db.conn.execute(
+            "SELECT name, username, email, birthdate, phone, role FROM users WHERE id = ?", (self.user_id,)
+        ).fetchone()
+        layout = QFormLayout()
+        if user:
+            layout.addRow("Név:", QLabel(user[0]))
+            layout.addRow("Felhasználónév:", QLabel(user[1]))
+            layout.addRow("Email:", QLabel(user[2]))
+            layout.addRow("Születési dátum:", QLabel(user[3]))
+            layout.addRow("Telefonszám:", QLabel(user[4]))
+            layout.addRow("Szerepkör:", QLabel(user[5]))
+        else:
+            layout.addRow(QLabel("Felhasználó nem található!"))
+        self.setLayout(layout)
