@@ -180,3 +180,12 @@ class DatabaseService:
         cursor = self.conn.cursor()
         cursor.execute('UPDATE users SET profile_pic=? WHERE id=?', (pic_path, user_id))
         self.conn.commit()
+
+    # Jelszó ellenőrzése
+    def check_user_password(self, user_id, password):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT password FROM users WHERE id=?', (user_id,))
+        row = cursor.fetchone()
+        if row and row[0] == password:
+            return True
+        return False
