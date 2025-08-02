@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTableWidget, QPushButton, QHBoxLayout, QComboBox
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTableWidget, QPushButton, QHBoxLayout, QComboBox, QTableWidgetItem
+
 
 # Felhasználók kezelésére szolgáló ablak (admin funkciók)
 class UserManagementDialog(QDialog):
@@ -32,3 +33,13 @@ class UserManagementDialog(QDialog):
         layout.addLayout(btn_layout)
         self.setLayout(layout)
 
+    # Felhasználók betöltése az adatbázisból a táblázatba
+    def load_users(self):
+        self.table.setRowCount(0)
+        cursor = self.db.conn.cursor()
+        cursor.execute('SELECT id, name, username, email, role, suspended FROM users')
+        for row in cursor.fetchall():
+            row_idx = self.table.rowCount()
+            self.table.insertRow(row_idx)
+            for col, val in enumerate(row):
+                self.table.setItem(row_idx, col, QTableWidgetItem(str(val)))
