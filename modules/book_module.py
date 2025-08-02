@@ -2,6 +2,8 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
     QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView
 )
+
+from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
 
 
@@ -124,4 +126,10 @@ class BookWindow(QMainWindow):
         logout_btn.clicked.connect(self.logout)
         btn_layout.addWidget(logout_btn)
         layout.addLayout(btn_layout)
+
+    # Profil szerkesztésének megnyitása
+    def open_profile_edit_dialog(self):
+        dialog = ProfileEditDialog(self.user_id, self)
+        dialog.exec()
+
 
