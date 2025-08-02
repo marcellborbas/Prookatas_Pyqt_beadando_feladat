@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 
@@ -189,3 +190,14 @@ class DatabaseService:
         if row and row[0] == password:
             return True
         return False
+
+    # Profilkép fájl mentése/tárolása
+    def save_profile_picture(self, user_id, file_path):
+        save_dir = "profile_pics"
+        os.makedirs(save_dir, exist_ok=True)
+        ext = os.path.splitext(file_path)[1]
+        dest = os.path.join(save_dir, f"user_{user_id}{ext}")
+        with open(file_path, "rb") as f_in, open(dest, "wb") as f_out:
+            f_out.write(f_in.read())
+        self.update_profile_pic(user_id, dest)
+        return dest
