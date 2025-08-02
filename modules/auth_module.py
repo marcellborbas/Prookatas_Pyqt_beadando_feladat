@@ -68,3 +68,32 @@ class RegisterWindow(QWidget):
         self.setWindowTitle("Regisztráció")
         self.db = DatabaseService()
         self.init_ui()
+
+     # Regisztrációs űrlap létrehozása
+    def init_ui(self):
+        layout = QVBoxLayout()
+        form = QFormLayout()
+
+        self.name_input = QLineEdit()
+        self.username_input = QLineEdit()
+        self.email_input = QLineEdit()
+        self.birthdate_input = QLineEdit()
+        self.phone_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.admin_checkbox = QCheckBox("Admin jogosultság")
+
+        form.addRow("Név:", self.name_input)
+        form.addRow("Felhasználónév:", self.username_input)
+        form.addRow("Email:", self.email_input)
+        form.addRow("Születési dátum (YYYY-MM-DD):", self.birthdate_input)
+        form.addRow("Telefonszám (+36...):", self.phone_input)
+        form.addRow("Jelszó:", self.password_input)
+        form.addRow(self.admin_checkbox)
+
+        self.submit_btn = QPushButton("Regisztráció")
+        self.submit_btn.clicked.connect(self.handle_register)
+        form.addRow(self.submit_btn)
+
+        layout.addLayout(form)
+        self.setLayout(layout)
