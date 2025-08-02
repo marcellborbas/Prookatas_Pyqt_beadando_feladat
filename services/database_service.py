@@ -349,3 +349,16 @@ class DatabaseService:
             ORDER BY borrow_count DESC
         ''')
         return cursor.fetchall()
+
+    # Legtöbb kölcsönzést végző felhasználók (top lista)
+    def get_top_readers(self, limit=10):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT u.username, u.name, COUNT(l.id) AS borrow_count
+            FROM users u
+            JOIN loans l ON u.id = l.user_id
+            GROUP BY u.id
+            ORDER BY borrow_count DESC
+            LIMIT ?
+        ''', (limit,))
+        return cursor.fetchall()
