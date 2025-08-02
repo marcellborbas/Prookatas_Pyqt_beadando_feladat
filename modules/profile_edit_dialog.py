@@ -1,9 +1,11 @@
 import os
 
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QPushButton, QFormLayout, QLineEdit, QFileDialog)
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QPushButton, QFormLayout, QLineEdit, QFileDialog,
+                             QMessageBox)
 from services.database_service import DatabaseService
-
+from utils.validators import is_valid_name, is_valid_email, is_valid_birthdate, is_valid_phone, is_valid_password, \
+    is_valid_username
 
 
 # Profil szerkesztése adblak
@@ -73,3 +75,51 @@ class ProfileEditDialog(QDialog):
             self.pic_label.setPixmap(QPixmap(fname).scaled(100, 100))
             self.db.update_profile_pic(self.user_id, fname)
 
+    # Mentés gomb működése , felhasználói adatok frissítése az adatbázisban
+    def save(self):
+        try:
+            name = self.name_edit.text()
+            username = self.username_edit.text()
+            email = self.email_edit.text()
+            birthdate = self.birthdate_edit.text()
+            phone = self.phone_edit.text()
+            old_pw = self.old_pw.text()
+            new_pw = self.new_pw.text()
+
+            errors = []
+            if not is_valid_name(name):
+                errors.append("A név legalább 2 karakter legyen!")
+            if not is_valid_username(username):
+                errors.append("A felhasználónév legalább 3 karakter legyen, csak betű/szám!")
+            if not is_valid_email(email):
+                errors.append("Hibás email formátum!")
+            if not is_valid_birthdate(birthdate):
+                errors.append("Születési dátum formátum: YYYY-MM-DD!")
+            if not is_valid_phone(phone):
+                errors.append("Hibás telefonszám!")
+
+            # Jelszóváltás ellenőrzése (csak ha megadott új jelszót)
+            if new_pw:  # Ha NEM üres
+                if not self.db.check_user_password(self.user_id, old_pw):
+                    errors.append("A régi jelszó hibás!")
+                pw_errors = is_valid_password(new_pw)
+                if pw_errors:
+                    errors.append("Az új jelszó nem elég erős:\n- " + "\n- ".join(pw_errors))
+            # Ha csak régi jelszó van megadva, de új nincs!
+            elif old_pw:
+                errors.append("A jelszó nem lehet üres!")
+
+            if errors:
+                QMessageBox.warning(self, "Adatellenőrzés", "\n".join(errors))
+                return
+            # Csak akkor frissítsen, ha tényleg van új jelszó!
+            if new_pw:
+                self.db.update_user_password(self.user_id, new_pw)
+                QMessageBox.information(self, "Siker", "A jelszó sikeresen megváltozott!")
+
+            self.db.update_user_profile(self.user_id, name, username, email, birthdate, phone)
+            QMessageBox.information(self, "Mentés", "Profil módosítva!")
+            self.accept()
+
+        except Exception as e:
+            QMessageBox.critical(self, "Mentés hiba", f"Hiba történt:\n{str(e)}")
