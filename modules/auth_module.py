@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import (
 
 from modules.book_module import BookWindow
 from services.database_service import DatabaseService
+from utils.validators import is_valid_name, is_valid_username, is_valid_email, is_valid_birthdate, is_valid_phone, \
+    is_valid_password
 
 
 class LoginWindow(QWidget):
@@ -69,7 +71,7 @@ class RegisterWindow(QWidget):
         self.db = DatabaseService()
         self.init_ui()
 
-     # Regisztrációs űrlap létrehozása
+    # Regisztrációs űrlap létrehozása
     def init_ui(self):
         layout = QVBoxLayout()
         form = QFormLayout()
@@ -97,3 +99,42 @@ class RegisterWindow(QWidget):
 
         layout.addLayout(form)
         self.setLayout(layout)
+
+     # Regisztrációs adatok validálása és mentése
+    def handle_register(self):
+        name = self.name_input.text()
+        username = self.username_input.text()
+        email = self.email_input.text()
+        birthdate = self.birthdate_input.text()
+        phone = self.phone_input.text()
+        password = self.password_input.text()
+        role = "admin" if self.admin_checkbox.isChecked() else "user"
+
+        errors = []
+        if not is_valid_name(name):
+            errors.append("A név legalább 2 karakter legyen!")
+        if not is_valid_username(username):
+            errors.append("A felhasználónév legalább 3 karakter legyen, csak betű/szám!")
+        if not is_valid_email(email):
+            errors.append("Hibás email formátum!")
+        if not is_valid_birthdate(birthdate):
+            errors.append("Születési dátum formátum: YYYY-MM-DD!")
+        if not is_valid_phone(phone):
+            errors.append("Hibás telefonszám!")
+        if not password:
+            errors.append("A jelszó nem lehet üres!")
+        else:
+            pw_errors = is_valid_password(password)
+            if pw_errors:
+                errors.append("A jelszó nem elég erős:\n- " + "\n- ".join(pw_errors))
+
+        if errors:
+            QMessageBox.warning(self, "Adatellenőrzés", "\n".join(errors))
+            return
+
+        try:
+            self.db.add_user(name, username, email, birthdate, phone, password, role)
+            QMessageBox.information(self, "Siker", "Sikeres regisztráció! Most már bejelentkezhetsz.")
+            self.close()
+        except Exception as e:
+            QMessageBox.critical(self, "Hiba", f"Nem sikerült a regisztráció: {str(e)}")
