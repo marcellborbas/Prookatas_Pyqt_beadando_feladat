@@ -43,3 +43,13 @@ class UserManagementDialog(QDialog):
             self.table.insertRow(row_idx)
             for col, val in enumerate(row):
                 self.table.setItem(row_idx, col, QTableWidgetItem(str(val)))
+
+    # Kiválasztott felhasználó törlése
+    def delete_user(self):
+        selected = self.table.currentRow()
+        if selected < 0:
+            return
+        user_id = int(self.table.item(selected, 0).text())
+        self.db.delete_user(user_id)
+        self.load_users()
+
