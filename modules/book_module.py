@@ -1,3 +1,5 @@
+import csv
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
@@ -203,3 +205,17 @@ class BookWindow(QMainWindow):
                 self.load_books()
             except Exception as e:
                 QMessageBox.critical(self, "Hiba", f"Hiba: {str(e)}")
+
+    # Könyvek importálása CSV fájlból
+    def import_books(self):
+        fname, _ = QFileDialog.getOpenFileName(self, "Könyvek importálása (CSV)")
+        if fname:
+            with open(fname, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    try:
+                        self.db.add_book(row["title"], row["authors"], row["isbn"], row["year"], row.get("pdf_path"))
+                    except Exception:
+                        pass
+            QMessageBox.information(self, "Import", "Importálás kész!")
+            self.load_books()
