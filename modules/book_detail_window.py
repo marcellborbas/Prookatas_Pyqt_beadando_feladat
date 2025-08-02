@@ -205,4 +205,11 @@ class BookDetailWindow(QDialog):
             QMessageBox.information(self, "Foglalás", "Foglalásod törölve.")
             self.update_content()
 
+    # Vélemény beküldése
+    def submit_review(self):
+        rating = self.rating_input.value()
+        comment = self.comment_input.toPlainText().strip()
+        self.db.add_review(self.user_id, self.book['isbn'], rating, comment)
+        self.comment_input.clear()
+        self.refresh_reviews()
 
