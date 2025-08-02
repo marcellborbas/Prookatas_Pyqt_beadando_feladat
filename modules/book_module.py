@@ -271,3 +271,21 @@ class BookWindow(QMainWindow):
         if fail_messages:
             msg += "\n" + "\n".join(fail_messages)
         QMessageBox.information(self, "Visszaadás eredménye", msg)
+
+    # Könyv törlése (csak admin)
+    def delete_book(self):
+        selected = self.table.currentRow()
+        if selected < 0:
+            QMessageBox.warning(self, "Figyelem", "Válassz ki egy könyvet!")
+            return
+        isbn = self.table.item(selected, 2).text()
+        reply = QMessageBox.question(self, "Megerősítés", "Biztosan törölni akarod ezt a könyvet?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            try:
+                self.db.delete_book(isbn)
+                QMessageBox.information(self, "Törlés", "A könyv törölve lett.")
+                self.load_books()
+            except Exception as e:
+                QMessageBox.critical(self, "Hiba", f"Hiba történt: {str(e)}")
+
