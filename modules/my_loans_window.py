@@ -78,3 +78,9 @@ class MyLoansWindow(QWidget):
         self.page_label.setText(f"Oldal: {self.current_page + 1} / {total_pages}")
         self.prev_btn.setEnabled(self.current_page > 0)
         self.next_btn.setEnabled((self.current_page + 1) * self.rows_per_page < len(self.loans))
+
+    # Előző oldal megjelenítése
+    def show_prev_page(self):
+        if self.current_page > 0:
+            self.current_page -= 1
+            self.update_table()
