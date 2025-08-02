@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QTableWidget, QPushButton, QHBoxLayout, QComboBox, QHeaderView, QTableWidgetItem
+    QDialog, QVBoxLayout, QTableWidget, QPushButton, QHBoxLayout, QComboBox, QHeaderView, QTableWidgetItem, QMessageBox
 )
 
 
@@ -57,3 +57,15 @@ class UserManagementDialog(QDialog):
                 if col == 0:
                     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)  # ID mező ne legyen szerkeszthető
                 self.table.setItem(row_idx, col, item)
+
+    # Kiválasztott felhasználó ID-jának lekérése
+    def get_selected_user_id(self):
+        selected = self.table.currentRow()
+        if selected < 0:
+            QMessageBox.warning(self, "Figyelem", "Válassz ki egy felhasználót!")
+            return None
+        id_item = self.table.item(selected, 0)
+        if id_item is None or id_item.text() == "":
+            QMessageBox.warning(self, "Figyelem", "Érvénytelen sor!")
+            return None
+        return int(id_item.text())
