@@ -387,3 +387,14 @@ class DatabaseService:
             ORDER BY r.reserved_at DESC
         ''', (user_id,))
         return cursor.fetchall()
+
+
+    # Foglalás lemondása (lejárttá tétele)
+    def cancel_reservation(self, reservation_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            UPDATE reservations SET expires_at=?
+            WHERE id=?
+        ''', (datetime.datetime.now().isoformat(), reservation_id))
+        self.conn.commit()
+
