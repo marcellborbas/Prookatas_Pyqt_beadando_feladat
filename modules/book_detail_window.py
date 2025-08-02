@@ -1,6 +1,7 @@
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QFrame, QPushButton, QListWidget, QListWidgetItem, QHBoxLayout, QSpinBox, QTextEdit
+    QDialog, QVBoxLayout, QLabel, QFrame, QPushButton, QListWidget, QListWidgetItem, QHBoxLayout, QSpinBox, QTextEdit,
+    QMessageBox
 )
 from PyQt6.QtCore import Qt
 from services.database_service import DatabaseService
@@ -186,3 +187,13 @@ class BookDetailWindow(QDialog):
         self.submit_btn = QPushButton("Értékelés beküldése")
         self.submit_btn.clicked.connect(self.submit_review)
         self.main_layout.addWidget(self.submit_btn)
+
+    # Könyv lefoglalása
+    def reserve_book(self):
+        try:
+            self.db.reserve_book(self.book['isbn'], self.user_id)
+            QMessageBox.information(self, "Foglalás", "A könyvet sikeresen lefoglaltad. Értesítünk, ha elérhető lesz!")
+            self.update_content()
+        except Exception as e:
+            QMessageBox.warning(self, "Foglalás hiba", str(e))
+
