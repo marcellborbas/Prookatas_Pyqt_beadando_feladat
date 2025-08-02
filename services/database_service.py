@@ -158,3 +158,13 @@ class DatabaseService:
                 "profile_pic": row[8]
             }
         return None
+
+    # Felhasználói profiladatok frissítése
+    def update_user_profile(self, user_id, name, username, email, birthdate, phone):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            UPDATE users
+            SET name=?, username=?, email=?, birthdate=?, phone=?
+            WHERE id=?
+        ''', (name, username, email, birthdate, phone, user_id))
+        self.conn.commit()
