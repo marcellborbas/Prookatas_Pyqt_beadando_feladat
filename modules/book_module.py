@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
+from utils.filters import filter_books
 
 
 class BookWindow(QMainWindow):
@@ -131,5 +132,23 @@ class BookWindow(QMainWindow):
     def open_profile_edit_dialog(self):
         dialog = ProfileEditDialog(self.user_id, self)
         dialog.exec()
+
+    # Könyvek szűrése megadott mezők alapján
+    def handle_filter(self):
+        all_books = self.db.get_all_books()
+        title = self.filter_title.text()
+        authors = self.filter_authors.text()
+        isbn = self.filter_isbn.text()
+        year = self.filter_year.text()
+        year_val = int(year) if year.isdigit() else None
+        filtered = filter_books(
+            all_books,
+            title=title if title else None,
+            authors=authors if authors else None,
+            isbn=isbn if isbn else None,
+            year=year_val
+        )
+        self.load_books(filtered)
+        self.filtered_books = filtered
 
 
