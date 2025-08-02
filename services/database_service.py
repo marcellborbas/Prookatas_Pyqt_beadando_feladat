@@ -296,3 +296,22 @@ class DatabaseService:
         cursor.execute('DELETE FROM loans WHERE book_isbn=?', (isbn,))
         cursor.execute('DELETE FROM books WHERE isbn=?', (isbn,))
         self.conn.commit()
+
+    # Könyv lefoglalása, ha már ki van kölcsönözve
+    def reserve_book(self, isbn, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT borrowed FROM books WHERE isbn=?', (isbn,))
+        book_row = cursor.fetchone()
+        if not book_row or not book_row[0]:
+            raise Exception("A könyv szabadon kikölcsönözhető, foglalás nem szükséges!")
+        cursor.execute('''
+            SELECT id FROM reservations
+            WHERE book_isbn=? AND user_id=? AND (expires_at IS NULL OR expires_at = '')
+        ''', (isbn, user_id))
+        if cursor.fetchone():
+            raise Exception("Már van foglalásod erre a könyvre!")
+        cursor.execute('''
+            INSERT INTO reservations (user_id, book_isbn, reserved_at)
+            VALUES (?, ?, ?)
+        ''', (user_id, isbn, datetime.datetime.now().isoformat()))
+        self.conn.commit()
