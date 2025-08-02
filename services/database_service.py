@@ -248,3 +248,32 @@ class DatabaseService:
             VALUES (?, ?, ?, ?)
         ''', (user_id, isbn, borrowed_at.isoformat(), due_date.date().isoformat()))
         self.conn.commit()
+
+    # Könyv visszahozása
+    def return_book(self, isbn, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT user_id, due_date, borrowed_at FROM loans
+            WHERE book_isbn=? AND returned_at IS NULL
+        ''', (isbn,))
+        loan = cursor.fetchone()
+        if not loan:
+            raise Exception("A könyv jelenleg nincs kikölcsönözve.")
+        actual_user_id, due_date, borrowed_at = loan
+        if actual_user_id != user_id:
+            cursor.execute('SELECT username FROM users WHERE id=?', (actual_user_id,))
+            username = cursor.fetchone()[0]
+            raise Exception(f"A könyvet {username} user kölcsönözte ki, próbáld meg később!")
+        returned_at = datetime.datetime.now()
+        cursor.execute('UPDATE books SET borrowed=0 WHERE isbn=?', (isbn,))
+        cursor.execute('''
+            UPDATE loans SET returned_at=?
+            WHERE book_isbn=? AND user_id=? AND returned_at IS NULL
+        ''', (returned_at.isoformat(), isbn, user_id))
+        self.conn.commit()
+
+        # Késés ellenőrzése
+        if returned_at.date() > datetime.date.fromisoformat(due_date):
+            days_late = (returned_at.date() - datetime.date.fromisoformat(due_date)).days
+            return days_late
+        return 0
