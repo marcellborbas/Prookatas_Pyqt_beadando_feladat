@@ -197,3 +197,12 @@ class BookDetailWindow(QDialog):
         except Exception as e:
             QMessageBox.warning(self, "Foglalás hiba", str(e))
 
+    # Foglalás törlése
+    def cancel_reservation(self):
+        res = self.db.get_reservation(self.user_id, self.book['isbn'])
+        if res:
+            self.db.cancel_reservation(res[0])
+            QMessageBox.information(self, "Foglalás", "Foglalásod törölve.")
+            self.update_content()
+
+
