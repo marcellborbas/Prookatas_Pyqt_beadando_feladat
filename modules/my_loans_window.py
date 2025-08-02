@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QHBoxLayout, QPushButton, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QHBoxLayout, QPushButton, QLabel, \
+    QTableWidgetItem
+
 
 class MyLoansWindow(QWidget):
     def __init__(self, db, user_id):
@@ -53,3 +55,26 @@ class MyLoansWindow(QWidget):
             ''', (self.user_id,)
         ).fetchall()
         return loans
+
+    # Az aktuális oldal adatainak megjelenítése
+    def update_table(self):
+        start = self.current_page * self.rows_per_page
+        end = start + self.rows_per_page
+        data = self.loans[start:end]
+        self.table.setRowCount(len(data))
+        for row, rowdata in enumerate(data):
+            self.table.setItem(row, 0, QTableWidgetItem(str(rowdata[0])))
+            self.table.setItem(row, 1, QTableWidgetItem(str(rowdata[1])))
+            self.table.setItem(row, 2, QTableWidgetItem(str(rowdata[2])))
+            self.table.setItem(row, 3, QTableWidgetItem(str(rowdata[3])[:19]))
+            self.table.setItem(row, 4, QTableWidgetItem(str(rowdata[4])[:10]))
+            returned = rowdata[5] if rowdata[5] else ""
+            self.table.setItem(row, 5, QTableWidgetItem(str(returned)[:19]))
+            status = "Visszaadva" if rowdata[5] else "Kikölcsönözve"
+            self.table.setItem(row, 6, QTableWidgetItem(status))
+
+        # Lapozási információk
+        total_pages = max(1, (len(self.loans) - 1) // self.rows_per_page + 1)
+        self.page_label.setText(f"Oldal: {self.current_page + 1} / {total_pages}")
+        self.prev_btn.setEnabled(self.current_page > 0)
+        self.next_btn.setEnabled((self.current_page + 1) * self.rows_per_page < len(self.loans))
