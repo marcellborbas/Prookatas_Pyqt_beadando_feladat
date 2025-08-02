@@ -201,3 +201,12 @@ class DatabaseService:
             f_out.write(f_in.read())
         self.update_profile_pic(user_id, dest)
         return dest
+
+    # Új könyv hozzáadása
+    def add_book(self, title, authors, isbn, year, pdf_path=None):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT INTO books (title, authors, isbn, year, borrowed, pdf_path)
+            VALUES (?, ?, ?, ?, 0, ?)
+        ''', (title, authors, isbn, int(year), pdf_path))
+        self.conn.commit()
