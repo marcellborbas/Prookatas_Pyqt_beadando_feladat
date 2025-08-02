@@ -362,3 +362,16 @@ class DatabaseService:
             LIMIT ?
         ''', (limit,))
         return cursor.fetchall()
+
+    # Felhasználó adott könyvre vonatkozó aktív foglalásának lekérdezése
+    def get_reservation(self, user_id, isbn):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT * FROM reservations
+            WHERE user_id=? 
+              AND book_isbn=? 
+              AND (expires_at IS NULL OR expires_at = '')
+            ORDER BY reserved_at DESC
+            LIMIT 1
+        ''', (user_id, isbn))
+        return cursor.fetchone()
