@@ -62,3 +62,11 @@ class BookDetailWindow(QDialog):
         self.setLayout(self.main_layout)
         self.update_content()
 
+    # Az ablakban lévő összes widget törlése
+    def clear_content(self):
+        while self.main_layout.count():
+            child = self.main_layout.takeAt(0)
+            widget = child.widget()
+            if widget is not None:
+                widget.deleteLater()
+
