@@ -1,7 +1,7 @@
 import os
 
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QPushButton, QFormLayout, QLineEdit)
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QPushButton, QFormLayout, QLineEdit, QFileDialog)
 from services.database_service import DatabaseService
 
 
@@ -65,3 +65,11 @@ class ProfileEditDialog(QDialog):
         layout.addWidget(save_btn)
 
         self.setLayout(layout)
+
+    # Fénykép felöltése
+    def upload_pic(self):
+        fname, _ = QFileDialog.getOpenFileName(self, "Válassz profilképet", filter="Image files (*.png *.jpg *.jpeg)")
+        if fname:
+            self.pic_label.setPixmap(QPixmap(fname).scaled(100, 100))
+            self.db.update_profile_pic(self.user_id, fname)
+
