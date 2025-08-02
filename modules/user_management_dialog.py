@@ -94,3 +94,13 @@ class UserManagementDialog(QDialog):
         current = int(suspend_item.text())
         self.db.suspend_user(user_id, not current)
         self.load_users()
+
+    # Felhasználó szerepkörének módosítása
+    def change_role(self):
+        user_id = self.get_selected_user_id()
+        if not user_id:
+            return
+        new_role = self.role_combo.currentText()
+        self.db.change_user_role(user_id, new_role)
+        self.load_users()
+
