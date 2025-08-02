@@ -1,9 +1,11 @@
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
     QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView,
     QMessageBox, QFileDialog, QTableWidgetItem
 )
 
+from modules.dialogs.add_book_dialog import AddBookDialog
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
 from services.export_service import export_books_to_csv
@@ -189,3 +191,15 @@ class BookWindow(QMainWindow):
                 color = Qt.GlobalColor.green if is_borrowed_by_self else Qt.GlobalColor.red
                 for col in range(5):
                     self.table.item(row, col).setBackground(color)
+
+    # Könyv hozzáadása
+    def add_book_dialog(self):
+        dialog = AddBookDialog(self)
+        if dialog.exec():
+            title, authors, isbn, year, pdf_path = dialog.get_data()
+            try:
+                self.db.add_book(title, authors, isbn, year, pdf_path)
+                QMessageBox.information(self, "Siker", "Könyv hozzáadva!")
+                self.load_books()
+            except Exception as e:
+                QMessageBox.critical(self, "Hiba", f"Hiba: {str(e)}")
