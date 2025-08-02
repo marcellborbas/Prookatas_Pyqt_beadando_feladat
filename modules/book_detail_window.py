@@ -213,3 +213,14 @@ class BookDetailWindow(QDialog):
         self.comment_input.clear()
         self.refresh_reviews()
 
+    # Vélemények frissítése
+    def refresh_reviews(self):
+        self.reviews_list.clear()
+        reviews = self.db.get_reviews_for_book(self.book['isbn'])
+        for r in reviews:
+            item = QListWidgetItem(f"★ {r[0]}   {r[2]} ({r[3][:10]})\n{r[1]}")
+            item.setBackground(QColor("#f6f7fa"))
+            item.setForeground(QColor("#222"))
+            self.reviews_list.addItem(item)
+
+
