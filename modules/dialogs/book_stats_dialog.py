@@ -38,3 +38,18 @@ class BookStatsDialog(QDialog):
         self.setMinimumHeight(400)
         self.setSizeGripEnabled(True)
 
+ # Tábla frissítése a statisztikák megjelenítéséhez
+    def update_table(self):
+        start = self.current_page * self.rows_per_page
+        end = start + self.rows_per_page
+        data = self.stats[start:end]
+        self.table.setRowCount(len(data))
+        for i, row in enumerate(data):
+            for j, v in enumerate(row):
+                self.table.setItem(i, j, QTableWidgetItem(str(v)))
+        self.table.resizeColumnsToContents()
+        total_pages = (len(self.stats) - 1) // self.rows_per_page + 1
+        self.page_label.setText(f"Oldal: {self.current_page + 1} / {total_pages}")
+        self.prev_btn.setEnabled(self.current_page > 0)
+        self.next_btn.setEnabled((self.current_page + 1) * self.rows_per_page < len(self.stats))
+
