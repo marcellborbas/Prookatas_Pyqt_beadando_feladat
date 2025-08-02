@@ -1,5 +1,6 @@
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QTableWidget, QPushButton, QHBoxLayout, QComboBox, QHeaderView
+    QDialog, QVBoxLayout, QTableWidget, QPushButton, QHBoxLayout, QComboBox, QHeaderView, QTableWidgetItem
 )
 
 
@@ -44,3 +45,15 @@ class UserManagementDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
+    # Felhasználók adatainak betöltése az adatbázisból és megjelenítése a táblázatban
+    def load_users(self):
+        self.table.setRowCount(0)
+        users = self.db.get_all_users()
+        for row in users:
+            row_idx = self.table.rowCount()
+            self.table.insertRow(row_idx)
+            for col, val in enumerate(row):
+                item = QTableWidgetItem(str(val))
+                if col == 0:
+                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)  # ID mező ne legyen szerkeszthető
+                self.table.setItem(row_idx, col, item)
