@@ -1,7 +1,7 @@
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
     QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView,
-    QMessageBox, QFileDialog
+    QMessageBox, QFileDialog, QTableWidgetItem
 )
 
 from modules.profile_edit_dialog import ProfileEditDialog
@@ -162,3 +162,30 @@ class BookWindow(QMainWindow):
         if fname:
             export_books_to_csv(self.filtered_books, fname)
             QMessageBox.information(self, "Export", "Exportálás sikeres!")
+
+    # Könyvek betöltése a táblázatba (opcionálisan szűrve)
+    def load_books(self, books=None):
+        if books is None:
+            books = self.db.get_all_books()
+        self.table.setRowCount(0)
+        loans = self.db.get_borrowed_books()
+        for book in books:
+            row = self.table.rowCount()
+            self.table.insertRow(row)
+            self.table.setItem(row, 0, QTableWidgetItem(book["title"]))
+            self.table.setItem(row, 1, QTableWidgetItem(book["authors"]))
+            self.table.setItem(row, 2, QTableWidgetItem(book["isbn"]))
+            self.table.setItem(row, 3, QTableWidgetItem(str(book["year"])))
+            # Könyv státuszának meghatározása
+            borrowed_str = "Nem"
+            is_borrowed_by_self = False
+            for l in loans:
+                if l[2] == book["isbn"]:
+                    borrowed_str = f"Igen ({l[4]}, {l[5][:10]})"
+                    if l[3] == self.user_id:
+                        is_borrowed_by_self = True
+            self.table.setItem(row, 4, QTableWidgetItem(borrowed_str))
+            if borrowed_str != "Nem":
+                color = Qt.GlobalColor.green if is_borrowed_by_self else Qt.GlobalColor.red
+                for col in range(5):
+                    self.table.item(row, col).setBackground(color)
