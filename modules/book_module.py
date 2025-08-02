@@ -289,3 +289,15 @@ class BookWindow(QMainWindow):
             except Exception as e:
                 QMessageBox.critical(self, "Hiba", f"Hiba történt: {str(e)}")
 
+    # Könyv részletes adatainak megnyitása külön ablakban
+    def open_detail_window(self, item):
+        row = item.row()
+        book = {
+            "title": self.table.item(row, 0).text(),
+            "authors": self.table.item(row, 1).text(),
+            "isbn": self.table.item(row, 2).text(),
+            "year": self.table.item(row, 3).text(),
+        }
+        from modules.book_detail_window import BookDetailWindow
+        detail_win = BookDetailWindow(book, self.user_id, self)
+        detail_win.exec()
