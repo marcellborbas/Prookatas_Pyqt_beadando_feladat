@@ -375,3 +375,15 @@ class DatabaseService:
             LIMIT 1
         ''', (user_id, isbn))
         return cursor.fetchone()
+
+    # Felhasználó aktív foglalásainak lekérdezése
+    def get_reservations_for_user(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT r.id, r.book_isbn, r.reserved_at, b.title, b.authors
+            FROM reservations r
+            JOIN books b ON r.book_isbn = b.isbn
+            WHERE r.user_id=? AND r.expires_at IS NULL
+            ORDER BY r.reserved_at DESC
+        ''', (user_id,))
+        return cursor.fetchall()
