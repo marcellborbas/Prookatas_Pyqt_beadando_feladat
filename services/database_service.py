@@ -337,3 +337,15 @@ class DatabaseService:
             ORDER BY r.created_at DESC
         ''', (isbn,))
         return cursor.fetchall()
+
+    # Könyv kölcsönzési statisztikák
+    def get_book_borrow_stats(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT b.title, b.isbn, COUNT(DISTINCT l.user_id) AS user_count, COUNT(l.id) AS borrow_count
+            FROM books b
+            LEFT JOIN loans l ON b.isbn = l.book_isbn
+            GROUP BY b.isbn
+            ORDER BY borrow_count DESC
+        ''')
+        return cursor.fetchall()
