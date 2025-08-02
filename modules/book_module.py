@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
 )
 
 from modules.dialogs.add_book_dialog import AddBookDialog
+from modules.dialogs.book_stats_dialog import BookStatsDialog
 from modules.my_loans_window import MyLoansWindow
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
@@ -313,3 +314,8 @@ class BookWindow(QMainWindow):
         self.close()
         if self.login_window is not None:
             self.login_window.show()
+
+    # Könyv statisztikák megjelenítése
+    def show_book_stats(self):
+        dialog = BookStatsDialog(self.db, self)
+        dialog.exec()
