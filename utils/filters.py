@@ -15,7 +15,6 @@ def filter_books(books, title=None, authors=None, isbn=None, year=None):
             continue
         # Év szűrés
         if year is not None:
-            # year lehet int vagy str, book['year'] is
             if str(year) != str(book.get('year', '')):
                 continue
         filtered.append(book)
