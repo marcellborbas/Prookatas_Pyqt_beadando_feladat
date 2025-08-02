@@ -69,3 +69,15 @@ class UserManagementDialog(QDialog):
             QMessageBox.warning(self, "Figyelem", "Érvénytelen sor!")
             return None
         return int(id_item.text())
+
+    # Felhasználó törlésének kezelése
+    def delete_user(self):
+        user_id = self.get_selected_user_id()
+        if not user_id:
+            return
+        reply = QMessageBox.question(self, "Megerősítés", "Biztosan törölni akarod?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+        self.db.delete_user(user_id)
+        self.load_users()
