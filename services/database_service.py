@@ -416,3 +416,9 @@ class DatabaseService:
         cursor.execute('INSERT INTO categories (name) VALUES (?)', (name,))
         self.conn.commit()
 
+    # Kategória és hozzá tartozó kapcsolatok törlése
+    def delete_category(self, category_id):
+        cursor = self.conn.cursor()
+        cursor.execute('DELETE FROM categories WHERE id=?', (category_id,))
+        cursor.execute('DELETE FROM book_categories WHERE category_id=?', (category_id,))
+        self.conn.commit()
