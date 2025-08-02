@@ -128,4 +128,13 @@ class DatabaseService:
         ''', (name, username, email, birthdate, phone, password, role))
         self.conn.commit()
 
+     # Felhasználó lekérése felhasználónév alapján
+    def get_user_by_username(self, username):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        row = cursor.fetchone()
+        if row:
+            columns = [col[0] for col in cursor.description]
+            return dict(zip(columns, row))
+        return None
 
