@@ -138,3 +138,23 @@ class DatabaseService:
             return dict(zip(columns, row))
         return None
 
+    # Felhasználó lekérése ID alapján
+    def get_user_by_id(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            'SELECT id, name, username, email, birthdate, phone, password, role, profile_pic FROM users WHERE id=?',
+            (user_id,))
+        row = cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "name": row[1],
+                "username": row[2],
+                "email": row[3],
+                "birthdate": row[4],
+                "phone": row[5],
+                "password": row[6],
+                "role": row[7],
+                "profile_pic": row[8]
+            }
+        return None
