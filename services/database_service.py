@@ -315,3 +315,13 @@ class DatabaseService:
             VALUES (?, ?, ?)
         ''', (user_id, isbn, datetime.datetime.now().isoformat()))
         self.conn.commit()
+
+
+    # Vélemény hozzáadása egy könyvhöz
+    def add_review(self, user_id, isbn, rating, comment):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT INTO reviews (user_id, book_isbn, rating, comment, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user_id, isbn, rating, comment, datetime.datetime.now().isoformat()))
+        self.conn.commit()
