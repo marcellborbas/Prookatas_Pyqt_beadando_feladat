@@ -409,3 +409,10 @@ class DatabaseService:
         cursor = self.conn.cursor()
         cursor.execute('UPDATE users SET role=? WHERE id=?', (new_role, user_id))
         self.conn.commit()
+
+    # Új kategória hozzáadása
+    def add_category(self, name):
+        cursor = self.conn.cursor()
+        cursor.execute('INSERT INTO categories (name) VALUES (?)', (name,))
+        self.conn.commit()
+
