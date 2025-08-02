@@ -219,3 +219,31 @@ class BookWindow(QMainWindow):
                         pass
             QMessageBox.information(self, "Import", "Importálás kész!")
             self.load_books()
+
+    # Könyv kölcsönzése
+    def borrow_book(self):
+        user = self.db.get_user_by_id(self.user_id)
+        if user and int(user.get("suspended", 0)) == 1:
+            QMessageBox.warning(self, "Hiba", "A felhasználó felfüggesztve van, nem kölcsönözhet!")
+            return
+        selected_indexes = self.table.selectedIndexes()
+        if not selected_indexes:
+            QMessageBox.warning(self, "Figyelem", "Válassz ki legalább egy könyvet!")
+            return
+        selected_rows = set(idx.row() for idx in selected_indexes)
+        success_count = 0
+        fail_count = 0
+        fail_messages = []
+        for row in selected_rows:
+            isbn = self.table.item(row, 2).text()
+            try:
+                self.db.borrow_book(isbn, self.user_id)
+                success_count += 1
+            except Exception as e:
+                fail_count += 1
+                fail_messages.append(f"{self.table.item(row, 0).text()} - {str(e)}")
+        self.load_books()
+        msg = f"Sikeresen kikölcsönöztél {success_count} könyvet."
+        if fail_count:
+            msg += f"\n{fail_count} könyvet nem sikerült:\n" + "\n".join(fail_messages)
+        QMessageBox.information(self, "Kölcsönzés eredménye", msg)
