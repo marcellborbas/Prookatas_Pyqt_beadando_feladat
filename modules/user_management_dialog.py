@@ -81,3 +81,16 @@ class UserManagementDialog(QDialog):
             return
         self.db.delete_user(user_id)
         self.load_users()
+
+    # Felhasználó felfüggesztésének/aktiválásának kezelése
+    def toggle_suspend(self):
+        user_id = self.get_selected_user_id()
+        if not user_id:
+            return
+        suspend_item = self.table.item(self.table.currentRow(), 5)
+        if suspend_item is None:
+            QMessageBox.warning(self, "Figyelem", "Nem található a felfüggesztés mező!")
+            return
+        current = int(suspend_item.text())
+        self.db.suspend_user(user_id, not current)
+        self.load_users()
