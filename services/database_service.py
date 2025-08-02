@@ -289,3 +289,10 @@ class DatabaseService:
                WHERE l.returned_at IS NULL
            ''')
         return cursor.fetchall()
+
+    # Könyv törlése adatbázisból (és kölcsönzések)
+    def delete_book(self, isbn):
+        cursor = self.conn.cursor()
+        cursor.execute('DELETE FROM loans WHERE book_isbn=?', (isbn,))
+        cursor.execute('DELETE FROM books WHERE isbn=?', (isbn,))
+        self.conn.commit()
