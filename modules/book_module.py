@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 )
 
 from modules.dialogs.add_book_dialog import AddBookDialog
-from modules.dialogs.book_stats_dialog import BookStatsDialog
+from modules.dialogs.book_stats_dialog import BookStatsDialog, TopReadersDialog
 from modules.my_loans_window import MyLoansWindow
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
@@ -318,4 +318,9 @@ class BookWindow(QMainWindow):
     # Könyv statisztikák megjelenítése
     def show_book_stats(self):
         dialog = BookStatsDialog(self.db, self)
+        dialog.exec()
+
+    # Olvasói toplista megjelenítése
+    def show_reader_stats(self):
+        dialog = TopReadersDialog(self.db, self)
         dialog.exec()
