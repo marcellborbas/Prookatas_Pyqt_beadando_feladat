@@ -434,3 +434,9 @@ class DatabaseService:
         cursor = self.conn.cursor()
         cursor.execute('INSERT INTO book_categories (book_isbn, category_id) VALUES (?, ?)', (isbn, category_id))
         self.conn.commit()
+
+    # Összes felhasználó lekérdezése
+    def get_all_users(self):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT id, name, username, email, role, suspended FROM users')
+        return cursor.fetchall()
