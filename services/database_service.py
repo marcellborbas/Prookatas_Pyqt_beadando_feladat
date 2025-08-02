@@ -128,7 +128,7 @@ class DatabaseService:
         ''', (name, username, email, birthdate, phone, password, role))
         self.conn.commit()
 
-     # Felhasználó lekérése felhasználónév alapján
+    # Felhasználó lekérése felhasználónév alapján
     def get_user_by_username(self, username):
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
@@ -167,4 +167,10 @@ class DatabaseService:
             SET name=?, username=?, email=?, birthdate=?, phone=?
             WHERE id=?
         ''', (name, username, email, birthdate, phone, user_id))
+        self.conn.commit()
+
+    # Jelszó frissítése
+    def update_user_password(self, user_id, new_password):
+        cursor = self.conn.cursor()
+        cursor.execute('UPDATE users SET password=? WHERE id=?', (new_password, user_id))
         self.conn.commit()
