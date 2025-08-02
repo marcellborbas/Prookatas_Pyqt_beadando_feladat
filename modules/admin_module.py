@@ -53,3 +53,12 @@ class UserManagementDialog(QDialog):
         self.db.delete_user(user_id)
         self.load_users()
 
+     # Kiválasztott felhasználó felfüggesztése vagy aktiválása
+    def toggle_suspend(self):
+        selected = self.table.currentRow()
+        if selected < 0:
+            return
+        user_id = int(self.table.item(selected, 0).text())
+        current = int(self.table.item(selected, 5).text())
+        self.db.suspend_user(user_id, not current)
+        self.load_users()
