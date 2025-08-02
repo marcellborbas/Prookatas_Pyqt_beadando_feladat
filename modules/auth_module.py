@@ -1,10 +1,9 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QMessageBox
+    QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QMessageBox, QCheckBox
 )
 
 from modules.book_module import BookWindow
 from services.database_service import DatabaseService
-
 
 
 class LoginWindow(QWidget):
@@ -14,7 +13,7 @@ class LoginWindow(QWidget):
         self.db = DatabaseService()
         self.init_ui()
 
-    #felület felépítése
+    # felület felépítése
     def init_ui(self):
         layout = QVBoxLayout()
         form = QFormLayout()
@@ -38,7 +37,7 @@ class LoginWindow(QWidget):
         layout.addLayout(form)
         self.setLayout(layout)
 
-     # Bejelentkezés kezelése
+    # Bejelentkezés kezelése
     def handle_login(self):
         username = self.username_input.text()
         password = self.password_input.text()
@@ -57,3 +56,15 @@ class LoginWindow(QWidget):
         self.book_window.show()
         self.hide()
 
+    # Regisztrációs ablak megnyitása
+    def open_register(self):
+        self.register_window = RegisterWindow()
+        self.register_window.show()
+
+
+class RegisterWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Regisztráció")
+        self.db = DatabaseService()
+        self.init_ui()
