@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
 )
 
 from modules.dialogs.add_book_dialog import AddBookDialog
+from modules.my_loans_window import MyLoansWindow
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
 from services.export_service import export_books_to_csv
@@ -301,3 +302,8 @@ class BookWindow(QMainWindow):
         from modules.book_detail_window import BookDetailWindow
         detail_win = BookDetailWindow(book, self.user_id, self)
         detail_win.exec()
+
+    # Saját kölcsönzések megjelenítése
+    def show_my_loans(self):
+        self.loans_window = MyLoansWindow(self.db, self.user_id)
+        self.loans_window.show()
