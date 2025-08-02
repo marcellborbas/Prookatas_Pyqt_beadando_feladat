@@ -440,3 +440,9 @@ class DatabaseService:
         cursor = self.conn.cursor()
         cursor.execute('SELECT id, name, username, email, role, suspended FROM users')
         return cursor.fetchall()
+
+    # Felhasználó törlése
+    def delete_user(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('DELETE FROM users WHERE id=?', (user_id,))
+        self.conn.commit()
