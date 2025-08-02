@@ -428,3 +428,9 @@ class DatabaseService:
         cursor = self.conn.cursor()
         cursor.execute('SELECT id, name FROM categories')
         return cursor.fetchall()
+
+    # Könyv hozzárendelése kategóriához
+    def assign_book_to_category(self, isbn, category_id):
+        cursor = self.conn.cursor()
+        cursor.execute('INSERT INTO book_categories (book_isbn, category_id) VALUES (?, ?)', (isbn, category_id))
+        self.conn.commit()
