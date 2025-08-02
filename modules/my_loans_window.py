@@ -84,3 +84,9 @@ class MyLoansWindow(QWidget):
         if self.current_page > 0:
             self.current_page -= 1
             self.update_table()
+
+    # Következő oldal megjelenítése
+    def show_next_page(self):
+        if (self.current_page + 1) * self.rows_per_page < len(self.loans):
+            self.current_page += 1
+            self.update_table()
