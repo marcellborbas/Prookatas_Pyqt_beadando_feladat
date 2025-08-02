@@ -174,3 +174,9 @@ class DatabaseService:
         cursor = self.conn.cursor()
         cursor.execute('UPDATE users SET password=? WHERE id=?', (new_password, user_id))
         self.conn.commit()
+
+    # Profilkép útvonal frissítése
+    def update_profile_pic(self, user_id, pic_path):
+        cursor = self.conn.cursor()
+        cursor.execute('UPDATE users SET profile_pic=? WHERE id=?', (pic_path, user_id))
+        self.conn.commit()
