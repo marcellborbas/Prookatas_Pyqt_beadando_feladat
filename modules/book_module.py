@@ -344,3 +344,7 @@ class BookWindow(QMainWindow):
         from modules.user_management_dialog import UserManagementDialog
         dialog = UserManagementDialog(self.db, self)
         dialog.exec()
+
+    # Kategóriakezelő
+    def open_category_management(self):
+        QMessageBox.information(self, "Fejlesztés alatt", "Kategória/címkék kezelése funkció fejlesztés alatt!")
