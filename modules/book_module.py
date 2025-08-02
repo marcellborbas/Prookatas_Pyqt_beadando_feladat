@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView,
     QMessageBox, QFileDialog, QTableWidgetItem
 )
+from matplotlib import pyplot as plt
 
 from modules.dialogs.add_book_dialog import AddBookDialog
 from modules.dialogs.book_stats_dialog import BookStatsDialog, TopReadersDialog
@@ -324,3 +325,16 @@ class BookWindow(QMainWindow):
     def show_reader_stats(self):
         dialog = TopReadersDialog(self.db, self)
         dialog.exec()
+
+    # Legnépszerűbb könyvek grafikonjának megjelenítése
+    def show_book_popularity_chart(self):
+        stats = self.db.get_book_borrow_stats()
+        titles = [row[0] for row in stats]
+        borrows = [row[3] for row in stats]
+        plt.figure(figsize=(10, 6))
+        plt.barh(titles, borrows, color="#2d7efb")
+        plt.xlabel("Kölcsönzések száma")
+        plt.ylabel("Könyv címe")
+        plt.title("Legnépszerűbb könyvek")
+        plt.tight_layout()
+        plt.show()
