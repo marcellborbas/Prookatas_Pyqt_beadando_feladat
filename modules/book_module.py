@@ -1,10 +1,12 @@
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
-    QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView
+    QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView,
+    QMessageBox, QFileDialog
 )
 
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
+from services.export_service import export_books_to_csv
 from utils.filters import filter_books
 
 
@@ -151,4 +153,12 @@ class BookWindow(QMainWindow):
         self.load_books(filtered)
         self.filtered_books = filtered
 
-
+    # Szűrt könyvek exportálása CSV fájlba
+    def export_filtered_books(self):
+        if not self.filtered_books:
+            QMessageBox.warning(self, "Export", "Nincs mit exportálni! Előbb szűrj!")
+            return
+        fname, _ = QFileDialog.getSaveFileName(self, "Eredmények exportálása CSV-be", filter="CSV files (*.csv)")
+        if fname:
+            export_books_to_csv(self.filtered_books, fname)
+            QMessageBox.information(self, "Export", "Exportálás sikeres!")
