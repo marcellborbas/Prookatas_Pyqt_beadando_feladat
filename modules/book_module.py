@@ -338,3 +338,9 @@ class BookWindow(QMainWindow):
         plt.title("Legnépszerűbb könyvek")
         plt.tight_layout()
         plt.show()
+
+    # Felhasználók kezelése (admin)
+    def open_user_management(self):
+        from modules.user_management_dialog import UserManagementDialog
+        dialog = UserManagementDialog(self.db, self)
+        dialog.exec()
