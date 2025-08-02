@@ -1,9 +1,8 @@
+from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
-    QWidget, QMainWindow
+    QWidget, QMainWindow, QVBoxLayout, QMenu, QHBoxLayout, QLineEdit, QPushButton, QLabel, QTableWidget, QHeaderView
 )
 from services.database_service import DatabaseService
-
-
 
 
 class BookWindow(QMainWindow):
@@ -22,4 +21,107 @@ class BookWindow(QMainWindow):
 
         self.resize(1100, 700)
 
+    def init_ui(self):
+        layout = QVBoxLayout(self._central_widget)
+
+        # Menü (adminnak import funkció)
+        menubar = self.menuBar()
+        stat_menu = QMenu("Statisztikák", self)
+        book_stats_action = QAction("Könyv toplista", self)
+        book_stats_action.triggered.connect(self.show_book_stats)
+        stat_menu.addAction(book_stats_action)
+        reader_stats_action = QAction("Olvasó toplista", self)
+        reader_stats_action.triggered.connect(self.show_reader_stats)
+        stat_menu.addAction(reader_stats_action)
+        menubar.addMenu(stat_menu)
+
+        # Egyéb funkciók menü
+        action_menu = QMenu("Action", self)
+        if self.user_role == "admin":
+
+            # Admin funkciók
+            import_action = QAction("Importálás (CSV)", self)
+            import_action.triggered.connect(self.import_books)
+            action_menu.addAction(import_action)
+
+            manage_users_action = QAction("Felhasználók kezelése", self)
+            manage_users_action.triggered.connect(self.open_user_management)
+            action_menu.addAction(manage_users_action)
+
+            manage_cats_action = QAction("Kategóriák/címkék kezelése", self)
+            manage_cats_action.triggered.connect(self.open_category_management)
+            action_menu.addAction(manage_cats_action)
+
+        # Minden felhasználónak elérhető menüpontok
+        my_loans_action = QAction("Kikölcsönzött könyveim", self)
+        my_loans_action.triggered.connect(self.show_my_loans)
+        action_menu.addAction(my_loans_action)
+
+        profile_edit_action = QAction("Profil szerkesztése", self)
+        profile_edit_action.triggered.connect(self.open_profile_edit_dialog)
+        action_menu.addAction(profile_edit_action)
+        menubar.addMenu(action_menu)
+
+        # Szűrőpanel létrehozása (cím, szerző, ISBN, év)
+        filter_layout = QHBoxLayout()
+        self.filter_title = QLineEdit()
+        self.filter_title.setPlaceholderText("Cím")
+        filter_layout.addWidget(self.filter_title, 2)
+        self.filter_authors = QLineEdit()
+        self.filter_authors.setPlaceholderText("Szerző(k)")
+        filter_layout.addWidget(self.filter_authors, 2)
+        self.filter_isbn = QLineEdit()
+        self.filter_isbn.setPlaceholderText("ISBN")
+        filter_layout.addWidget(self.filter_isbn, 1)
+        self.filter_year = QLineEdit()
+        self.filter_year.setPlaceholderText("Év")
+        filter_layout.addWidget(self.filter_year, 1)
+        filter_btn = QPushButton("Szűrés")
+        filter_btn.clicked.connect(self.handle_filter)
+        filter_layout.addWidget(filter_btn, 1)
+        layout.addLayout(filter_layout)
+
+        # Exportálás gomb
+        export_btn = QPushButton("Keresés eredmény exportálása CSV-be")
+        export_btn.clicked.connect(self.export_filtered_books)
+        layout.addWidget(export_btn)
+
+        # Súgó szöveg
+        help_label = QLabel("Több könyv kijelöléséhez tartsd lenyomva a Ctrl vagy Shift billentyűt.")
+        layout.addWidget(help_label)
+
+        # Könyvlista táblázat
+        self.table = QTableWidget()
+        self.table.setColumnCount(5)
+        self.table.setHorizontalHeaderLabels(["Cím", "Szerző(k)", "ISBN", "Év", "Kölcsönözve"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.setSelectionMode(QTableWidget.SelectionMode.MultiSelection)
+        layout.addWidget(self.table)
+        self.table.itemDoubleClicked.connect(self.open_detail_window)
+
+        # Gombok (felhasználói funkciók
+        btn_layout = QHBoxLayout()
+        if self.user_role == "admin":
+            # Csak adminnak
+            add_book_btn = QPushButton("Könyv hozzáadása")
+            add_book_btn.clicked.connect(self.add_book_dialog)
+            btn_layout.addWidget(add_book_btn)
+
+            delete_book_btn = QPushButton("Könyv törlése")
+            delete_book_btn.clicked.connect(self.delete_book)
+            btn_layout.addWidget(delete_book_btn)
+
+        # Közös funkciók
+        borrow_btn = QPushButton("Kikölcsönzés")
+        borrow_btn.clicked.connect(self.borrow_book)
+        btn_layout.addWidget(borrow_btn)
+
+        return_btn = QPushButton("Visszaadás")
+        return_btn.clicked.connect(self.return_book)
+        btn_layout.addWidget(return_btn)
+
+        logout_btn = QPushButton("Kijelentkezés")
+        logout_btn.clicked.connect(self.logout)
+        btn_layout.addWidget(logout_btn)
+        layout.addLayout(btn_layout)
 
