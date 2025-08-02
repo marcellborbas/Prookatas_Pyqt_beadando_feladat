@@ -1,7 +1,9 @@
 from PyQt6.QtWidgets import (
-    QWidget, QFormLayout, QLineEdit, QPushButton
+    QWidget, QFormLayout, QLineEdit, QPushButton, QMessageBox
 )
 from services.database_service import DatabaseService
+from utils.validators import is_valid_username, is_valid_email, is_valid_birthdate, is_valid_phone
+
 
 # Felhasználói regisztrációs modul
 class UserModule(QWidget):
@@ -34,3 +36,31 @@ class UserModule(QWidget):
         self.form.addRow(self.register_btn)
 
         self.setLayout(self.form)
+
+    # Regisztráció gomb eseménykezelője
+    def handle_register(self):
+        # Felhasználói adatok
+        name = self.name_input.text()
+        username = self.username_input.text()
+        email = self.email_input.text()
+        birthdate = self.birthdate_input.text()
+        phone = self.phone_input.text()
+        password = self.password_input.text()
+
+        # Bemenetek validálása
+        if not name or not is_valid_username(username) or not is_valid_email(email) \
+                or not is_valid_birthdate(birthdate) or not is_valid_phone(phone) or not password:
+            QMessageBox.warning(self, "Hiba", "Kérlek, minden mezőt helyesen tölts ki!")
+            return
+
+        # Adatok mentése az adatbázisba
+        try:
+            self.db.conn.execute(
+                "INSERT INTO users (name, username, email, birthdate, phone, password, role, suspended) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
+                (name, username, email, birthdate, phone, password, "reader")
+            )
+            self.db.conn.commit()
+            QMessageBox.information(self, "Siker", "Sikeres regisztráció!")
+            self.close()
+        except Exception as e:
+            QMessageBox.critical(self, "Hiba", f"Hiba történt: {str(e)}")
