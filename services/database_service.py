@@ -210,3 +210,19 @@ class DatabaseService:
             VALUES (?, ?, ?, ?, 0, ?)
         ''', (title, authors, isbn, int(year), pdf_path))
         self.conn.commit()
+
+    # Minden könyv lekérésw
+    def get_all_books(self):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT title, authors, isbn, year, borrowed FROM books')
+        rows = cursor.fetchall()
+        books = []
+        for r in rows:
+            books.append({
+                "title": r[0],
+                "authors": r[1],
+                "isbn": r[2],
+                "year": r[3],
+                "borrowed": bool(r[4])
+            })
+        return books
