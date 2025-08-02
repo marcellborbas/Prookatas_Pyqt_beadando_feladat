@@ -41,3 +41,15 @@ class MyLoansWindow(QWidget):
         self.resize(1200, 450)
         self.update_table()
 
+    # Kölcsönzött könyvek lekérdezése az adatbázisból
+    def get_loans(self):
+        loans = self.db.conn.execute(
+            '''
+            SELECT b.title, b.authors, b.isbn, l.borrowed_at, l.due_date, l.returned_at
+            FROM loans l
+            JOIN books b ON l.book_isbn = b.isbn
+            WHERE l.user_id=? 
+            ORDER BY l.borrowed_at DESC
+            ''', (self.user_id,)
+        ).fetchall()
+        return loans
