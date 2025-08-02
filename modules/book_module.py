@@ -307,3 +307,9 @@ class BookWindow(QMainWindow):
     def show_my_loans(self):
         self.loans_window = MyLoansWindow(self.db, self.user_id)
         self.loans_window.show()
+
+    # Kijelentkezés és visszatérés a bejelentkező ablakhoz
+    def logout(self):
+        self.close()
+        if self.login_window is not None:
+            self.login_window.show()
