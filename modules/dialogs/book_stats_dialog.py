@@ -53,3 +53,14 @@ class BookStatsDialog(QDialog):
         self.prev_btn.setEnabled(self.current_page > 0)
         self.next_btn.setEnabled((self.current_page + 1) * self.rows_per_page < len(self.stats))
 
+    # Előző oldal megjelenítése
+    def show_prev_page(self):
+        if self.current_page > 0:
+            self.current_page -= 1
+            self.update_table()
+
+    # Következő oldal megjelenítése
+    def show_next_page(self):
+        if (self.current_page + 1) * self.rows_per_page < len(self.stats):
+            self.current_page += 1
+            self.update_table()
