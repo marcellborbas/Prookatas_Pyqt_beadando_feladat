@@ -1,5 +1,5 @@
 
-from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QFileDialog
 
 
 class AddBookDialog(QDialog):
@@ -31,3 +31,9 @@ class AddBookDialog(QDialog):
         layout.addRow(submit_btn)
         self.setLayout(layout)
 
+   # PDF fájl csatolása
+    def attach_pdf(self):
+        fname, _ = QFileDialog.getOpenFileName(self, "PDF kiválasztása", filter="PDF files (*.pdf)")
+        if fname:
+            self.pdf_path = fname
+            self.pdf_btn.setText(f"PDF csatolva: {os.path.basename(fname)}")
