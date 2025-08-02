@@ -119,5 +119,13 @@ class DatabaseService:
 
         self.conn.commit()
 
+    # Új felhasználó hozzáadása
+    def add_user(self, name, username, email, birthdate, phone, password, role):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT INTO users (name, username, email, birthdate, phone, password, role, suspended)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+        ''', (name, username, email, birthdate, phone, password, role))
+        self.conn.commit()
 
 
