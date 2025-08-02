@@ -422,3 +422,9 @@ class DatabaseService:
         cursor.execute('DELETE FROM categories WHERE id=?', (category_id,))
         cursor.execute('DELETE FROM book_categories WHERE category_id=?', (category_id,))
         self.conn.commit()
+
+    # Kategóriák listázása
+    def list_categories(self):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT id, name FROM categories')
+        return cursor.fetchall()
