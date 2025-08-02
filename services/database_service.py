@@ -404,3 +404,8 @@ class DatabaseService:
         cursor.execute('UPDATE users SET suspended=? WHERE id=?', (1 if suspend else 0, user_id))
         self.conn.commit()
 
+    # Felhasználó jogosultságának módosítása
+    def change_user_role(self, user_id, new_role):
+        cursor = self.conn.cursor()
+        cursor.execute('UPDATE users SET role=? WHERE id=?', (new_role, user_id))
+        self.conn.commit()
