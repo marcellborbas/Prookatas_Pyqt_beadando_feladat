@@ -247,3 +247,27 @@ class BookWindow(QMainWindow):
         if fail_count:
             msg += f"\n{fail_count} könyvet nem sikerült:\n" + "\n".join(fail_messages)
         QMessageBox.information(self, "Kölcsönzés eredménye", msg)
+
+    # Könyv visszaadása
+    def return_book(self):
+        selected_indexes = self.table.selectedIndexes()
+        if not selected_indexes:
+            QMessageBox.warning(self, "Figyelem", "Válassz ki legalább egy könyvet!")
+            return
+        selected_rows = set(idx.row() for idx in selected_indexes)
+        success_count = 0
+        fail_messages = []
+        for row in selected_rows:
+            isbn = self.table.item(row, 2).text()
+            try:
+                days_late = self.db.return_book(isbn, self.user_id)
+                success_count += 1
+                if days_late > 0:
+                    fail_messages.append(f"{self.table.item(row, 0).text()} - {days_late} nap késés!")
+            except Exception as e:
+                fail_messages.append(f"{self.table.item(row, 0).text()} - {str(e)}")
+        self.load_books()
+        msg = f"Sikeresen visszaadtál {success_count} könyvet."
+        if fail_messages:
+            msg += "\n" + "\n".join(fail_messages)
+        QMessageBox.information(self, "Visszaadás eredménye", msg)
