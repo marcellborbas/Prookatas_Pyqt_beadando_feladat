@@ -398,3 +398,9 @@ class DatabaseService:
         ''', (datetime.datetime.now().isoformat(), reservation_id))
         self.conn.commit()
 
+    # Felhasználó felfüggesztése/aktiválása
+    def suspend_user(self, user_id, suspend=True):
+        cursor = self.conn.cursor()
+        cursor.execute('UPDATE users SET suspended=? WHERE id=?', (1 if suspend else 0, user_id))
+        self.conn.commit()
+
