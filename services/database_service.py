@@ -277,3 +277,15 @@ class DatabaseService:
             days_late = (returned_at.date() - datetime.date.fromisoformat(due_date)).days
             return days_late
         return 0
+
+    # Kikölcsönzött könyvek listázása
+    def get_borrowed_books(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+               SELECT b.title, b.authors, b.isbn, l.user_id, u.username, l.borrowed_at, l.returned_at
+               FROM loans l
+               JOIN books b ON l.book_isbn = b.isbn
+               JOIN users u ON l.user_id = u.id
+               WHERE l.returned_at IS NULL
+           ''')
+        return cursor.fetchall()
