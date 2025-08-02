@@ -1,3 +1,6 @@
+import os
+import webbrowser
+
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QFrame, QPushButton, QListWidget, QListWidgetItem, QHBoxLayout, QSpinBox, QTextEdit,
@@ -223,4 +226,9 @@ class BookDetailWindow(QDialog):
             item.setForeground(QColor("#222"))
             self.reviews_list.addItem(item)
 
-
+    # PDF megnyitása
+    def open_pdf(self, pdf_path):
+        if pdf_path and os.path.exists(pdf_path):
+            webbrowser.open_new(pdf_path)
+        else:
+            QMessageBox.warning(self, "PDF hiba", "A PDF fájl nem található!")
