@@ -64,3 +64,28 @@ class BookStatsDialog(QDialog):
         if (self.current_page + 1) * self.rows_per_page < len(self.stats):
             self.current_page += 1
             self.update_table()
+
+# legaktívabb olvasók megjelenítése
+class TopReadersDialog(QDialog):
+    def __init__(self, db, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Legaktívabb olvasók")
+        layout = QVBoxLayout(self)
+        table = QTableWidget()
+        table.setColumnCount(3)
+        table.setHorizontalHeaderLabels(["Felhasználónév", "Név", "Kölcsönzések száma"])
+        stats = db.get_top_readers()
+        valid_rows = [row for row in stats if row and len(row) == 3]
+        table.setRowCount(len(valid_rows))
+        for i, row in enumerate(valid_rows):
+            for j, v in enumerate(row):
+                item = QTableWidgetItem(str(v) if v is not None else "")
+                table.setItem(i, j, item)
+        table.setSizeAdjustPolicy(QTableWidget.SizeAdjustPolicy.AdjustToContents)
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        layout.addWidget(table)
+        self.setLayout(layout)
+        self.setMinimumWidth(600)
+        self.setMinimumHeight(400)
+        self.setSizeGripEnabled(True)
+        self.resize(self.sizeHint())
