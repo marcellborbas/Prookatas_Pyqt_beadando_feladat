@@ -1,3 +1,4 @@
+import datetime
 import os
 import sqlite3
 
@@ -226,3 +227,24 @@ class DatabaseService:
                 "borrowed": bool(r[4])
             })
         return books
+
+    # Könyv kikölcsönzése
+    def borrow_book(self, isbn, user_id, loan_days=14):
+        cursor = self.conn.cursor()
+
+        # Ellenőrzések
+        cursor.execute('SELECT borrowed FROM books WHERE isbn=?', (isbn,))
+        book_row = cursor.fetchone()
+        if not book_row or book_row[0]:
+            raise Exception("A könyv már ki van kölcsönözve!")
+        cursor.execute('SELECT id FROM loans WHERE book_isbn=? AND returned_at IS NULL', (isbn,))
+        if cursor.fetchone():
+            raise Exception("A könyv már ki van kölcsönözve!")
+        cursor.execute('UPDATE books SET borrowed=1 WHERE isbn=?', (isbn,))
+        borrowed_at = datetime.datetime.now()
+        due_date = borrowed_at + datetime.timedelta(days=loan_days)
+        cursor.execute('''
+            INSERT INTO loans (user_id, book_isbn, borrowed_at, due_date)
+            VALUES (?, ?, ?, ?)
+        ''', (user_id, isbn, borrowed_at.isoformat(), due_date.date().isoformat()))
+        self.conn.commit()
