@@ -9,9 +9,9 @@ class MyLoansWindow(QWidget):
         self.db = db
         self.user_id = user_id
 
-        self.loans = self.get_loans()           # <--- Most elmentjük egy listába
-        self.rows_per_page = 10                 # <--- Hány sor legyen egy oldalon
-        self.current_page = 0                   # <--- Aktuális oldal
+        self.loans = self.get_loans()
+        self.rows_per_page = 10
+        self.current_page = 0
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 10, 10, 10)
