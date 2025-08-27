@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 
 from modules.dialogs.add_book_dialog import AddBookDialog
 from modules.dialogs.book_stats_dialog import BookStatsDialog, TopReadersDialog
+from modules.edit_book_dialog import EditBookDialog
 from modules.my_loans_window import MyLoansWindow
 from modules.profile_edit_dialog import ProfileEditDialog
 from services.database_service import DatabaseService
@@ -118,6 +119,10 @@ class BookWindow(QMainWindow):
             add_book_btn = QPushButton("Könyv hozzáadása")
             add_book_btn.clicked.connect(self.add_book_dialog)
             btn_layout.addWidget(add_book_btn)
+
+            edit_book_btn = QPushButton("Könyv szerkesztése")
+            edit_book_btn.clicked.connect(self.edit_book_dialog)
+            btn_layout.addWidget(edit_book_btn)
 
             delete_book_btn = QPushButton("Könyv törlése")
             delete_book_btn.clicked.connect(self.delete_book)
@@ -274,6 +279,37 @@ class BookWindow(QMainWindow):
         if fail_messages:
             msg += "\n" + "\n".join(fail_messages)
         QMessageBox.information(self, "Visszaadás eredménye", msg)
+
+    # Kijelölt könyvek szerkesztése admin jogosultsággal
+    def edit_book_dialog(self):
+        selected_indexes = self.table.selectedIndexes()
+        if not selected_indexes:
+            QMessageBox.warning(self, "Figyelem", "Válassz ki legalább egy könyvet szerkesztéshez!")
+            return
+        selected_rows = set(idx.row() for idx in selected_indexes)
+        modified_count = 0
+        for row in selected_rows:
+            isbn = self.table.item(row, 2).text()
+            book_row = self.db.conn.execute(
+                "SELECT title, authors, isbn, year, pdf_path FROM books WHERE isbn=?", (isbn,)
+            ).fetchone()
+            if not book_row:
+                continue
+            book = {
+                "title": book_row[0],
+                "authors": book_row[1],
+                "isbn": book_row[2],
+                "year": book_row[3],
+                "pdf_path": book_row[4]
+            }
+            dialog = EditBookDialog(book, self)
+            if dialog.exec():
+                title, authors, year, pdf_path = dialog.get_data()
+                self.db.update_book(book["isbn"], title, authors, year, pdf_path)
+                modified_count += 1
+        if modified_count > 0:
+            self.load_books()
+            QMessageBox.information(self, "Siker", f"{modified_count} könyv módosítása sikeres!")
 
     # Könyv törlése (csak admin)
     def delete_book(self):
