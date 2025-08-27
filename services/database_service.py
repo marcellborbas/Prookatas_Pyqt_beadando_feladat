@@ -297,6 +297,16 @@ class DatabaseService:
         cursor.execute('DELETE FROM books WHERE isbn=?', (isbn,))
         self.conn.commit()
 
+    # Könyv adatainak frissítése (ISBN alapján)
+    def update_book(self, isbn, new_title, new_authors, new_year, new_pdf_path):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            UPDATE books
+            SET title=?, authors=?, year=?, pdf_path=?
+            WHERE isbn=?
+        ''', (new_title, new_authors, int(new_year), new_pdf_path, isbn))
+        self.conn.commit()
+
     # Könyv lefoglalása, ha már ki van kölcsönözve
     def reserve_book(self, isbn, user_id):
         cursor = self.conn.cursor()
