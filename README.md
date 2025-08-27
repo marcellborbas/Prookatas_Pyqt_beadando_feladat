@@ -25,6 +25,10 @@ Ez egy egyszerű, PyQt6-alapú könyvtárkezelő asztali alkalmazás, amely tám
 2. Futtasd a `main.py` fájlt.
 3. Az alkalmazás első induláskor létrehozza az adatbázist (`library.db`).
 
+## Egyéb teendők
+
+1. A pdf_tesztelesehez_konyvek.csv fájlba ne felejtsd el be másolni a pdf fájlok absolute_path -át
+
 ## Fő funkciók
 
 - **Regisztráció, bejelentkezés, profil szerkesztés**
