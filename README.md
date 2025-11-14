@@ -22,7 +22,7 @@ Ez egy egyszerű, PyQt6-alapú könyvtárkezelő asztali alkalmazás, amely tám
 ## Futtatás
 
 1. Nyisd meg a projektet Pycharm-ban.
-2. Futtasd a `main.py` fájlt.
+2. Futtasd a `main.py` fájlt , vagy a dist mappában található main.exe-t.
 3. Az alkalmazás első induláskor létrehozza az adatbázist (`library.db`).
 
 ## Egyéb teendők
